@@ -8,12 +8,15 @@
 </head>
 <body>
     <div id="board"></div>
-
+    <div id="timer"></div>
     <script>
+        console.log(localStorage);
+        localStorage.clear();
         let nbrCases = prompt("Vous voulez jouer avec combien de case ?");
+        const time = 10;
 
         // La fonction qui permet de melanger
-        function shuffleChildren(parent){
+        function shuffleChildren(parent, classe){
             let children = parent.children;
             let i = children.length, k, temp;
             while(--i >0){//On boucle tant que 1 oté de i est toujours positif
@@ -25,8 +28,11 @@
                 children[k] = children[i];
                 // On place l'élément k pointé par temp à la fin du contenu de board
                 parent.appendChild(temp);
-
             }
+            children.forEach(child=>{
+                child.classList.remove(classe);
+                child.classList.add(classe);
+            })
         }
 
         
@@ -48,7 +54,6 @@
 
         let nb = 1;
 
-        
         // Creation des box
         for (let i =1; i <= nbrCases; i++){
             let newbox = box.cloneNode();
@@ -63,9 +68,22 @@
                     if (nb == board.children.length){
                         board.querySelectorAll(".box").forEach(function(box){
                             showReaction("success", box);
+                            const timerDiv = document.getElementById("timer");
+                            clearInterval(timer);
+                            // Arrete le temps
+                            const record = localStorage.getItem("record");
+                            // On récupère le record
+
+                            // S'il n'y a pas de record, où qu'on bat le record
+                            if (!record || ((time - timeLeft) < parseInt(record))){
+                                localStorage.setItem("record", time - timeLeft);
+                                timerDiv.textContent = `Vous avez battu le record avec un temps de ${time - timeLeft} secondes.`
+                            } else {
+                                timerDiv.textContent = `Vous avez gagnez en ${time - timeLeft} seconde, sans battre le record de ${record} secondes.`
+                            }
                         })
                     }
-                    shuffleChildren(board);
+                    shuffleChildren(board, "box");
                     nb++;
                     
                 } else if(i>nb){
@@ -73,16 +91,36 @@
                     nb = 1;
                     board.querySelectorAll(".box-valid").forEach(function(ValidBox){
                         ValidBox.classList.remove("box-valid");
-                    
+                        
                     })
-                    shuffleChildren(board);
+                    shuffleChildren(board, "box");
+                    timeLeft = 10;
                 } else {
                     showReaction("notice", newbox);
                 }
             })
         }
 
-        shuffleChildren(board);
+        shuffleChildren(board, "box");
+
+        let timeLeft = time;
+
+        // Fonction pour gérer le temps
+        function updateTimer(){
+            const timerDiv = document.getElementById("timer");
+            timerDiv.textContent = "Temps restant : " + timeLeft + " secondes."
+
+            if (timeLeft > 0){
+                timeLeft--;
+            } else {
+                clearInterval(timer);
+                timerDiv.textContent = "GAME OVER !!!";
+            }
+        }
+
+        let timer = setInterval(updateTimer, 1000);
+
+        
     </script>
 </body>
 </html>
