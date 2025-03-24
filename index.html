@@ -31,7 +31,9 @@
             }
             children.forEach(child=>{
                 child.classList.remove(classe);
+                void child.offsetWidth; 
                 child.classList.add(classe);
+                parent.appendChild(child);
             })
         }
 
