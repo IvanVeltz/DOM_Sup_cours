@@ -11,13 +11,13 @@
     <div id="timer"></div>
     <script>
         console.log(localStorage);
-        localStorage.clear();
+        //localStorage.clear();
         let nbrCases = prompt("Vous voulez jouer avec combien de case ?");
         const time = 10;
 
         // La fonction qui permet de melanger
         function shuffleChildren(parent, classe){
-            let children = parent.children;
+            let children = Array.from(parent.children);
             let i = children.length, k, temp;
             while(--i >0){//On boucle tant que 1 oté de i est toujours positif
                 // k stocke un nombre aleatoire basé sur i
@@ -31,9 +31,9 @@
             }
             children.forEach(child=>{
                 child.classList.remove(classe);
-                void child.offsetWidth; 
+                void child.offsetWidth;
+                // fonction magique pour relancer le chargement du dom
                 child.classList.add(classe);
-                parent.appendChild(child);
             })
         }
 
@@ -75,7 +75,6 @@
                             // Arrete le temps
                             const record = localStorage.getItem("record");
                             // On récupère le record
-
                             // S'il n'y a pas de record, où qu'on bat le record
                             if (!record || ((time - timeLeft) < parseInt(record))){
                                 localStorage.setItem("record", time - timeLeft);
